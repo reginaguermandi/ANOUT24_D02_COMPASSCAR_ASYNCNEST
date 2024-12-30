@@ -35,9 +35,11 @@ jobs:
 
     # Deploy to EC2
     - name: Deploy to EC2
+      env:
+        PROJECT_FOLDER: ${{ secrets.PROJECT_FOLDER }}
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP << 'EOF'
-          cd ${{ secrets.PROJECT_FOLDER }}
+        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP <<EOF
+          cd $PROJECT_FOLDER
           git pull origin main
           npm install
           npm run build
