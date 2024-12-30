@@ -26,12 +26,12 @@ jobs:
       run: |
         if [ -z "${{ secrets.DYNAMIC_EC2_IP }}" ]; then
           echo "Using default EC2 IP"
-          echo "EC2_IP=<DEFAULT_EC2_IP>" >> $GITHUB_ENV
+          echo "EC2_IP=${{ env.DEFAULT_EC2_IP }}" >> $GITHUB_ENV
         else
           echo "Using dynamic EC2 IP from secrets"
           echo "EC2_IP=${{ secrets.DYNAMIC_EC2_IP }}" >> $GITHUB_ENV
       env:
-        DEFAULT_EC2_IP: "3.145.63.28" # REPLACE with your default EC2 IP
+        DEFAULT_EC2_IP: "203.0.113.42" # REPLACE with your default EC2 IP
 
     # Deploy to EC2
     - name: Deploy to EC2
