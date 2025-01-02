@@ -33,6 +33,8 @@ jobs:
           cd $PROJECT_FOLDER
           git pull origin main
           npm install
+          npx prisma migrate deploy
+          npx prisma db seed
           npm run build
           pm2 restart all || pm2 start dist/src/main.js --name APIDESAFIO
         EOF
