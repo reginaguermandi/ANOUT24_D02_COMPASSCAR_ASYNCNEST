@@ -1,0 +1,1329 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["App"]
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns JWT access token"
+          },
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "summary": "Sign in user",
+        "tags": ["Auth"]
+      }
+    },
+    "/users": {
+      "post": {
+        "description": "Creates a new user by providing the necessary user information in the request body. If the user is already registered, a conflict error is returned. If the input data is invalid, a bad request error is returned.",
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "client created successfully"
+          },
+          "400": {
+            "description": "invalid input data"
+          },
+          "409": {
+            "description": "user already registered"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "create a new user",
+        "tags": ["Users"]
+      },
+      "get": {
+        "description": "Fetches a paginated list of users based on optional query parameters like page, limit, name, email, and status. Returns user data if found or an error if not.",
+        "operationId": "UsersController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "filter by active or inactive status",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "email",
+            "required": false,
+            "in": "query",
+            "description": "part of the user email for filtering",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "part of the user name for filtering",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "number of items per page (default: 10)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number (default: 1)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "users retrieved successfully"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "retrieve a paginated list of users",
+        "tags": ["Users"]
+      }
+    },
+    "/users/{id}": {
+      "patch": {
+        "description": "Uses the provided user ID to update user data based on the given request body. You can update individual fields or all fields of the user.",
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "client uptated successfully"
+          },
+          "400": {
+            "description": "invalid input data"
+          },
+          "404": {
+            "description": "user not found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "update user information by ID",
+        "tags": ["Users"]
+      },
+      "get": {
+        "description": "Fetches the details of a user based on the provided unique user ID. If the user is found, their data is returned. If no user is found, a 404 error is returned. In case of an internal server error, a 500 error is returned.",
+        "operationId": "UsersController_findById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user found successfully"
+          },
+          "404": {
+            "description": "user not found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "retrieve user by ID",
+        "tags": ["Users"]
+      },
+      "delete": {
+        "description": "Deactivates the user identified by the provided ID. The user will not be deleted, but marked as inactive. If the user is not found, a 404 error will be returned.",
+        "operationId": "UsersController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user deactivated successfully"
+          },
+          "404": {
+            "description": "user not found"
+          },
+          "500": {
+            "description": "internal server error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "deactivate a user by ID",
+        "tags": ["Users"]
+      }
+    },
+    "/car": {
+      "post": {
+        "operationId": "CarController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Car successfully created."
+          },
+          "400": {
+            "description": "Bad request, validation error."
+          },
+          "403": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new car entry",
+        "tags": ["Cars"]
+      },
+      "get": {
+        "operationId": "CarController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "brand",
+            "required": false,
+            "in": "query",
+            "description": "Brand's car",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "km",
+            "required": false,
+            "in": "query",
+            "description": "Car mileage",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Car year",
+            "schema": {
+              "minimum": 1,
+              "maximum": 2026,
+              "type": "number"
+            }
+          },
+          {
+            "name": "dailyPrice",
+            "required": false,
+            "in": "query",
+            "description": "Cars daily price",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of cars successfully retrieved."
+          },
+          "400": {
+            "description": "Invalid query parameters."
+          },
+          "403": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a list of cars",
+        "tags": ["Cars"]
+      }
+    },
+    "/car/{id}": {
+      "get": {
+        "operationId": "CarController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Car successfully retrieved."
+          },
+          "403": {
+            "description": "Access denied."
+          },
+          "404": {
+            "description": "Car not found."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a car by its ID",
+        "tags": ["Cars"]
+      },
+      "patch": {
+        "operationId": "CarController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Car successfully updated."
+          },
+          "400": {
+            "description": "Invalid input, failed validation."
+          },
+          "403": {
+            "description": "Access denied."
+          },
+          "404": {
+            "description": "Car not found."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a car by its ID",
+        "tags": ["Cars"]
+      },
+      "delete": {
+        "operationId": "CarController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Car successfully deleted."
+          },
+          "403": {
+            "description": "Access denied."
+          },
+          "404": {
+            "description": "Car not found."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a car by its ID",
+        "tags": ["Cars"]
+      }
+    },
+    "/orders": {
+      "post": {
+        "operationId": "OrderController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Orders"]
+      },
+      "get": {
+        "operationId": "OrderController_findAll",
+        "parameters": [
+          {
+            "name": "cpf",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Orders"]
+      }
+    },
+    "/orders/{id}": {
+      "put": {
+        "operationId": "OrderController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Orders"]
+      },
+      "get": {
+        "operationId": "OrderController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Orders"]
+      },
+      "delete": {
+        "operationId": "OrderController_cancelOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Orders"]
+      }
+    },
+    "/clients": {
+      "post": {
+        "operationId": "ClientsController_createClient",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client successfully created"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a Client",
+        "tags": ["Clients"]
+      },
+      "get": {
+        "operationId": "ClientsController_getClientByFilters",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Client's name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cpf",
+            "required": false,
+            "in": "query",
+            "description": "Client's CPF",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "required": false,
+            "in": "query",
+            "description": "Client's email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Client's status",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clients found"
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Search client by filters",
+        "tags": ["Clients"]
+      }
+    },
+    "/clients/{id}": {
+      "patch": {
+        "operationId": "ClientsController_updateClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Client successfully updated"
+          },
+          "400": {
+            "description": "Invalid action"
+          },
+          "404": {
+            "description": "Client not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a client by ID",
+        "tags": ["Clients"]
+      },
+      "get": {
+        "operationId": "ClientsController_getClientById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client found"
+          },
+          "404": {
+            "description": "Client not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Search a client by ID",
+        "tags": ["Clients"]
+      },
+      "delete": {
+        "operationId": "ClientsController_deleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client successfully deleted"
+          },
+          "404": {
+            "description": "Client not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a client",
+        "tags": ["Clients"]
+      }
+    }
+  },
+  "info": {
+    "title": "Car Rental",
+    "description": "An API used to rent cars, allows a user to register their customers, check available cars and make rental requests.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "SignInDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "password123",
+            "description": "User password"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "CreateUserDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "name of a user",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "email",
+            "example": "john.doe@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "pattern": "/^(?=.*[a-zA-Z])(?=.*\\d).+$/",
+            "description": "password",
+            "example": "password123"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "UpdateUserDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "name of a user",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "email of a user",
+            "example": "john.doe@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "pattern": "/^(?=.*[a-zA-Z])(?=.*\\d).+$/",
+            "description": "password of a user",
+            "example": "password123"
+          }
+        }
+      },
+      "CreateCarItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "CreateCarDto": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "description": "Brand of the car. This field is required.",
+            "example": "Jeep"
+          },
+          "model": {
+            "type": "string",
+            "description": "Model of the car. This field is required.",
+            "example": "Compass"
+          },
+          "plate": {
+            "type": "string",
+            "pattern": "/^[A-Z]{3}-[0-9][A-J0-9][0-9]{2}$/",
+            "description": "License plate of the car. Format: ABC-1D23 (3 uppercase letters, a hyphen, and a combination of digits and uppercase letters).",
+            "example": "ABC-1D23"
+          },
+          "year": {
+            "type": "number",
+            "minimum": 2015,
+            "maximum": 2026,
+            "description": "Year the car was manufactured. Must be at most 10 years old and cannot be in the future.",
+            "example": 2018
+          },
+          "km": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Number of kilometers driven. Must be greater than or equal to 0.",
+            "example": 45000
+          },
+          "dailyPrice": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Daily rental price of the car. Must be greater than 0.",
+            "example": 99.99
+          },
+          "items": {
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "List of car items. At least one item is required, and a maximum of five items is allowed.",
+            "example": [
+              {
+                "name": "GPS",
+                "price": 10
+              },
+              {
+                "name": "Baby seat",
+                "price": 20
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCarItemDto"
+            }
+          },
+          "status": {
+            "type": "boolean",
+            "description": "Status of the car. Defaults to true (active)"
+          }
+        },
+        "required": [
+          "brand",
+          "model",
+          "plate",
+          "year",
+          "km",
+          "dailyPrice",
+          "items"
+        ]
+      },
+      "UpdateCarDto": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "description": "Brand of the car. This field is required.",
+            "example": "Jeep"
+          },
+          "model": {
+            "type": "string",
+            "description": "Model of the car. This field is required.",
+            "example": "Compass"
+          },
+          "plate": {
+            "type": "string",
+            "pattern": "/^[A-Z]{3}-[0-9][A-J0-9][0-9]{2}$/",
+            "description": "License plate of the car. Format: ABC-1D23 (3 uppercase letters, a hyphen, and a combination of digits and uppercase letters).",
+            "example": "ABC-1D23"
+          },
+          "year": {
+            "type": "number",
+            "minimum": 2015,
+            "maximum": 2026,
+            "description": "Year the car was manufactured. Must be at most 10 years old and cannot be in the future.",
+            "example": 2018
+          },
+          "km": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Number of kilometers driven. Must be greater than or equal to 0.",
+            "example": 45000
+          },
+          "dailyPrice": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Daily rental price of the car. Must be greater than 0.",
+            "example": 99.99
+          },
+          "items": {
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "List of car items. At least one item is required, and a maximum of five items is allowed.",
+            "example": [
+              {
+                "name": "GPS",
+                "price": 10
+              },
+              {
+                "name": "Baby seat",
+                "price": 20
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCarItemDto"
+            }
+          },
+          "status": {
+            "type": "boolean",
+            "description": "Status of the car. Defaults to true (active)"
+          }
+        }
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "number"
+          },
+          "carId": {
+            "type": "number"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "cep": {
+            "type": "string",
+            "pattern": "/^\\d{5}-\\d{3}$/"
+          },
+          "uf": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "rentalFee": {
+            "type": "number"
+          },
+          "closeDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lateFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          }
+        },
+        "required": ["clientId", "carId", "startDate", "endDate", "cep"]
+      },
+      "OrderResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "clientId": {
+            "type": "number"
+          },
+          "carId": {
+            "type": "number"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "cep": {
+            "type": "string"
+          },
+          "uf": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "rentalFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "closeDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lateFee": {
+            "type": "number"
+          },
+          "statusOrder": {
+            "enum": ["open", "cancelled", "approved", "closed"],
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": ["id", "clientId", "carId", "startDate", "endDate", "cep"]
+      },
+      "UpdateOrderDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "number"
+          },
+          "carId": {
+            "type": "number"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "cep": {
+            "type": "string",
+            "pattern": "/^\\d{5}-\\d{3}$/"
+          },
+          "statusOrder": {
+            "type": "string",
+            "enum": ["open", "cancelled", "approved", "closed"]
+          },
+          "rentalFee": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Customer's full name",
+            "example": "John Doe"
+          },
+          "cpf": {
+            "type": "string",
+            "minLength": 11,
+            "maxLength": 11,
+            "description": "Customer's CPF",
+            "example": "64225307301"
+          },
+          "birthDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Customer's date of birth",
+            "example": "2000-01-01"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer's e-mail",
+            "example": "doe@mail.com"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 11,
+            "description": "Customer's phone number",
+            "example": "11123456789"
+          }
+        },
+        "required": ["name", "cpf", "birthDate", "email", "phone"]
+      },
+      "UpdateClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Customer's full name",
+            "example": "John Doe"
+          },
+          "cpf": {
+            "type": "string",
+            "minLength": 11,
+            "maxLength": 11,
+            "description": "Customer's CPF",
+            "example": "74836512894"
+          },
+          "birthDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Customer's date of birth",
+            "example": "1994-01-01"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer's e-mail",
+            "example": "john@mail.com"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 11,
+            "description": "Customer's phone number",
+            "example": "11123456789"
+          }
+        }
+      }
+    }
+  }
+}
